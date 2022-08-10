@@ -1,0 +1,37 @@
+#!/bin/bash
+#Sinb_b4
+function menu(){
+	echo "USAGE: updebian [comando] [repositorio[opcional]]"
+	echo -e "EX: \e[1;38m updebian\e[0m off"
+	echo -e "\e[1;34m OPTIONS:\e[0m:
+	\e[1;34mon\e[0m:\tup sources.list repository
+	\e[1;34moff\e[0m:\tdown sources.list repository
+	\e[1;34mshow\e[0m:\tshow sources.list repository
+	\e[1;34mls\e[0m:\tshow repository list"
+}
+#~~se menor que
+if [[ $# -lt 1 ]];then echo "Sem entrada";menu;exit;fi
+#~~se maior que
+if [[ $# -gt 1 ]];then Sinb_err;echo -en " Multiplas entradas.";menu;exit;fi
+
+case $1 in 
+	"on") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Processar on
+		echo "on"
+;; 
+	"off") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Processar off
+		echo "off"
+;;  
+	"show") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Processar show
+		echo "shown"
+;;
+	"ls") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Processar show
+		echo "ls"
+;;
+	*)
+		echo "Erro: entrada desconhecida"
+
+esac
+
+
+
+

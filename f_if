@@ -1,0 +1,336 @@
+#!/bin/bash
+#https://www.shellscriptx.com/2016/12/estrutura-condicional-if-then-elif-else-fi.html
+function SIG {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO \e[0m" ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m \e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+
+function continuo {
+	msgm="$1"
+	[ -z "$1" ] &&	msgm="Continuar"
+	SIG ">";echo -en "\e[1;32m""$msgm"" \e[0m[y/n/pular][Padrao: Y]? "
+	read -t5 -n1 opsao
+	[[ "$opsao" = "n" || "$opsao" = "N" ]] &&	exit 1
+	[[ "$opsao" = "p" || "$opsao" = "P" ]] &&	return 1
+	return 0
+}
+function lista(){
+	for ARQ in $( ls "./" )
+	do
+	#True se existe e é um diretório.
+	[ -d "$ARQ" ] && { if [ -z $1 ];then echo -e "$ARQ";break; fi
+	} #dir $1 vazio
+	#True se existe e é um arquivo regular.
+	[ -f "$ARQ" ] && { if [ -n $1 ];then echo -e "$ARQ";break; fi
+	} #arq $1 nao vazio
+	done
+}
+if continuo ;then
+	SIG ">";read -n50 -p "String1:" string1
+	[ -z "$string1" ] &&	{ string1="fabricio";echo -e "$string1"
+	}
+	SIG ">";read -n50 -p "String2:" string2;
+	[ -z "$string2" ] &&	{ string2="guedes";echo -e "$string2"
+	}
+
+	SIG ">";read -n5 -p "inteiro1:" inteiro1;
+	[ -z "$inteiro1" ] &&	{ inteiro1=10;echo -e "$inteiro1"
+	}
+	SIG ">";read -n5 -p "inteiro2:" inteiro2;
+	[ -z "$inteiro2" ] &&	{ inteiro2=50;echo -e "$inteiro2"
+	}
+#------------------------------------------------------------------------
+    expressao="[[ \e[1;34m-n\e[0m $ string1 ]]"
+    if [[ -n $string1 ]];then
+		SIG "+";echo -en "Comprimento diferente de 0\t$expressao	"
+    else
+		SIG "-";echo -en "Comprimento é 0\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[[ \e[1;34m-z\e[0m $ string2 ]]"
+    if [[ -z $string2 ]];then
+		SIG "+";echo -en "Comprimento é 0\t\t$expressao"
+    else
+		SIG "-";echo -en "Comprimento diferente de 0\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ '$ string1' \e[1;34m=\e[0m '$ string2' ]"
+	if [ "$string1" = "$string2" ];then
+		SIG "+";echo -en "São idênticas\t$expressao "
+    else
+		SIG "-";echo -en "São Diferentes\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ '$ string1' \e[1;34m!=\e[0m '$ string2' ]"
+	if [ "$string1" != "$string2" ];then
+		SIG "+";echo -en "São diferentes\t$expressao	"
+	else
+		SIG "-";echo -en "São idênticas\t$expressao"
+    fi
+
+
+echo -e "\n\nOperadores aritméticos"
+	expressao="[ $ inteiro1 \e[1;34m-eq\e[0m $ inteiro2 ]"
+	if [ $inteiro1 -eq $inteiro2 ];then
+		SIG "+";echo -en "Possui o mesmo valor que\t\t$expressao"
+	else
+		SIG "-";echo -en "Não possui o mesmo valor que\t$expressao"
+    fi
+#------------------------------------------------------------------------
+   expressao="[ $ inteiro1 \e[1;34m-ne\e[0m $ inteiro2 ]"
+	if [ $inteiro1 -ne $inteiro2 ];then
+		SIG "+";echo -en "Não possui o mesmo valor que\t$expressao"
+	else
+		SIG "-";echo -en "Possui o mesmo valor que\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ $ inteiro1 \e[1;34m-gt\e[0m  $ inteiro2 ]"
+	if [ $inteiro1 -gt  $inteiro2 ];then
+		SIG "+";echo -en "É maior que\t\t\t\t$expressao"
+	else
+		SIG "-";echo -en "Nao é É maior que\t\t\t$expressao"
+    fi
+#------------------------------------------------------------------------c
+    expressao="[ $ inteiro1 \e[1;34m-ge\e[0m $ inteiro2 ]"
+	if [ $inteiro1 -ge $inteiro2 ];then
+		SIG "+";echo -en "É maior ou igual\t\t\t$expressao"
+	else
+		SIG "-";echo -en "Não é maior ou igual\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ $ inteiro1 \e[1;34m-lt\e[0m   $ inteiro2 ]"
+	if [ $inteiro1 -lt   $inteiro2 ];then
+		SIG "+";echo -en "É menor que\t\t\t\t$expressao"
+	else
+		SIG "-";echo -en "Nao é menor que\t\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ $ inteiro1 \e[1;34m-le\e[0m  $ inteiro2 ]"
+	if [ $inteiro1 -le  $inteiro2 ];then
+		SIG "+";echo -en "É menor ou igual a\t\t\t$expressao"
+	else
+		SIG "-";echo -en "Nao é menor ou igual\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+
+echo -e "\n\nOperadores lógicos: Os operadores lógicos avaliam múltiplos blocos condicionais como se fosse parte de uma única expressão condicional de um ou mais elementos pré-definidos."
+
+exp1="( $inteiro1 -gt $inteiro2 )"
+exp2="( $string1 != $string2 )"
+SIG ".";echo -en "'exp1 = ( $ inteiro1 -gt $ inteiro2 )' : ( $inteiro1 > $inteiro2 )"
+SIG ".";echo -e "'exp2 = ( $ string1 != $ string2 )' : ( $string1 != $string2 )"
+
+    expressao="[ $ exp1 \e[1;34m-o\e[0m $ exp2 ]"
+	if [ $exp1 -o $exp2 ];then
+		SIG "+";echo -en "'V' se exp1 \e[1;34mOU\e[0m exp2 for 'V'.\t$expressao"
+	else
+		SIG "-";echo -en "\e[1;31mNem\e[0m exp1 \e[1;31mNem\e[0m exp2 são 'V'\t\t$expressao"
+    fi
+#------------------------------------------------------------------------c
+    expressao="[[ $ inteiro1 -gt $ inteiro2 \e[1;34m||\e[0m $ string1 != $ string2 ]]"
+	if [[ $inteiro1 -gt $inteiro2 || $string1 != $string2 ]]	;then
+		SIG "+";echo -en "'V' se exp1 \e[1;34mOU\e[0m exp2 for 'V'.\t$expressao"
+	else
+		SIG "-";echo -e "\e[1;31mNem\e[0m exp1 \e[1;31mNem\e[0m exp2 são 'V'\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+    expressao="[ $ exp1 \e[1;34m-a\e[0m $ exp2 ]"
+	if [ $exp1 -a $exp2 ];then
+		SIG "+";echo -en "'V' se exp1 \e[1;34mE\e[0m exp2 forem 'V'.\t$expressao"
+	else
+		SIG "-";echo -en "exp1 \e[1;34mOU\e[0m exp2 são \e[1;31mfalsos\e[0m\t\t$expressao"
+    fi
+
+#------------------------------------------------------------------------
+    expressao="[[ $ inteiro1 -gt $ inteiro2 \e[1;34m&&\e[0m $ string1 != $ string2 ]]"
+	if [[ $inteiro1 -gt $inteiro2 && $string1 != $string2 ]];then
+		SIG "+";echo -en "'V' se exp1 \e[1;34mE\e[0m exp2 forem 'V'\t$expressao"
+	else
+		SIG "-";echo -e "exp1 \e[1;34mOU\e[0m exp2 são \e[1;31mfalsos\e[0m\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ \e[1;34m!\e[0m $ exp1 ]"
+	if [ ! $exp1 ];then
+		SIG "+";echo -e "'V' se exp1 for \e[1;31mfalso\e[0m. ! Não lógico (NOT)\t$expressao"
+	else
+		SIG "-";echo -e "exp1 é \e[1;34mVerdadeiro\e[0m\t\t\t$expressao"
+    fi
+#------------------------------------------------------------------------
+fi
+
+echo -e "\nOperadores aritméticos \n
+	Operadores aritméticos são usados para executar muitas das operações aritméticas familiares que envolvem o cálculo de valores numéricos representados por literais, variáveis, outras expressões e constantes. Também classificados com operadores aritméticos são os operadores binários, que atuam no nível dos bits individuais dos operandos e deslocam seus padrões de bits para a esquerda ou direita."
+
+
+if continuo ;then
+	SIG ".";ls
+	if continuo "Automatico? ";then
+		SIG ">";read -n1 -p "Diretorio [vazio] ou Arquivo [nao vazio]? " op_dir
+		Arq=$(lista $op_dir)
+	else
+		SIG ">";read -p "Escolha o arquivo: " Arq
+	fi
+
+	SIG ".";echo -e "'$ Arq' = $Arq"
+#1------------------------------------------------------------------------
+	expressao="[ \e[1;34m-a\e[0m $ Arq ]"
+	if [ -a $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m.\t\t\t\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0mexiste\t\t\t\t$expressao"
+    fi
+#2------------------------------------------------------------------------
+	expressao="[ \e[1;34m-e\e[0m $ Arq ]"
+	if [ -e $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m.\t\t\t\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0mexiste\t\t\t\t$expressao"
+    fi
+#3------------------------------------------------------------------------
+	expressao="[ \e[1;34m-f\e[0m $ Arq ]"
+	if [ -f $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m e é um Arq \e[1;34mdregular\e[0m\t\t\t$expressao"
+	else
+		SIG "-";echo -e "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé um Arq \e[1;34mdregular\e[0m\t\t$expressao"
+    fi
+#4------------------------------------------------------------------------
+	expressao="[ \e[1;34m-d\e[0m $ Arq ]"
+	if [ -d $Arq ];then
+		SIG "+";echo -e "O Arq \e[1;34mexiste\e[0m E é um \e[1;34mdiretório\e[0m.\t\t\t$expressao"
+	else
+		SIG "-";echo -e "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé um \e[1;34mdiretório\e[0m.\t\t$expressao"
+    fi
+#5------------------------------------------------------------------------
+	expressao="[ \e[1;34m-r\e[0m $ Arq ]"
+	if [ -r $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m E é legível.\t\t\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé legível\t\t$expressao"
+    fi
+#6------------------------------------------------------------------------
+	expressao="[ \e[1;34m-h\e[0m $ Arq ]"
+	if [ -h $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m e é um é \e[1;34mlink simbólico\e[0m.\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé\e[1;34mlink simbólico\e[0m\t$expressao"
+    fi
+#7------------------------------------------------------------------------
+	expressao="[ \e[1;34m-L\e[0m $ Arq ]"
+	if [ -L $Arq ];then
+		SIG "+";echo -e "O Arq \e[1;34mexiste\e[0m e é um é \e[1;34mlink simbólico\e[0m.\t$expressao"
+	else
+		SIG "-";echo -e "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé \e[1;34mlink simbólico\e[0m\t$expressao"
+    fi
+#8------------------------------------------------------------------------
+	expressao="[ \e[1;34m-s\e[0m $ Arq ]"
+	if [ -s $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m E tem um tamanho maior que zero.\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé \e[1;34mtem um tamanho maior que zero\t$expressao"
+    fi
+#9------------------------------------------------------------------------
+	expressao="[ \e[1;34m-w\e[0m $ Arq ]"
+	if [ -w $Arq ];then
+		SIG "+";echo -e "O Arq \e[1;34mexiste\e[0m E é \e[1;34mgravável\e[0m.\t\t\t\t$expressao"
+	else
+		SIG "-";echo -e "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé \e[1;34mgravável\e[0m\t\t\t$expressao"
+    fi
+#10------------------------------------------------------------------------
+	expressao="[ \e[1;34m-x\e[0m $ Arq ]"
+	if [ -x $Arq ];then
+		SIG "+";echo -en "O Arq \e[1;34mexiste\e[0m E é \e[1;34mexecutável\e[0m.\t$expressao"
+	else
+		SIG "-";echo -en "O Arq \e[1;31mnão \e[0m\e[1;34mexiste\e[0m OU \e[1;31mnão \e[0mé \e[1;34mexecutável\e[0m\t$expressao"
+    fi
+#11------------------------------------------------------------------------
+	expressao="[ \e[1;34m-t\e[0m $ Arq ]"
+	if [ -t FD ];then
+		SIG "+";echo -e "V se descritor de ArqFD é aberto e refere-se a um terminal.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -b Arq ]"
+	if [ -b $Arq ];then
+		SIG "+";echo -e "V se o Arq existe e é um Arq de bloco especial.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao=" [ -c Arq ]"
+	if [ -c $Arq ];then
+		SIG "+";echo -e "V se o Arq existe e é um Arq de caráter especial.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -g Arq ]"
+	if [ -g $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e seu bit SGID está definido.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -k Arq ]"
+	if [ -k $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e seu bit sticky está definido.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -p Arq ]"
+	if [ -p $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e é um pipe nomeado (FIFO).\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -u Arq ]"
+	if [ -u $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e seu SUID (set user ID) bit é definido.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -o Arq ]"
+	if [ -o $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e é de propriedade do ID de usuário efetivo.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -G Arq ]"
+	if [ -G $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e é de propriedade do ID de grupo efetiva.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -N Arq ]"
+	if [ -N $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e foi modificado desde a última leitura.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao="[ -S Arq ]"
+	if [ -S $Arq ];then
+		SIG "+";echo -e "	V se o Arqexiste e é um soquete.\t$expressao"
+	else
+		SIG "-";echo -e "\t$expressao"
+    fi
+#------------------------------------------------------------------------
+	expressao=""
+
+	if [ $Arq1 nt Arq2];then echo -e "	V se Arq1 foi alterado mais recentemente do que Arq2, ou se Arq1 existe e Arq2 não.	";fi
+	if [ $Arq1 -ot Arq2];then echo -e "	V se Arq1 é mais velho do que Arq2, ou é Arq2 existe e Arq1 não.	";fi
+	if [ $Arq1 -ef Arq2];then echo -e "	V se Arq1 e Arq2 referem-se aos mesmos números de dispositivo e inode.	";fi
+	if [ -o OptionName ];then echo -e "	V se a opção shell "OptionName" está ativada.	";fi
+
+fi

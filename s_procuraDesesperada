@@ -1,0 +1,75 @@
+#!/bin/bash
+
+function continuo {
+echo -en "\e[1;32mContinuar \e[0m[\033[4;37mY\e[0mes/\033[4;37mS\e[0mair/\033[4;37mP\e[0mular]? "
+read -n1 opsao;echo ""
+	if [[ $opsao = "y" || $opsao = "y" ]]
+	then
+		echo -en "\n"
+	else
+		if [[ $opsao = "p" || $opsao = "P" ]]
+		then
+			pular="True"
+		else
+			exit 1
+		fi
+	fi
+}
+function abrir {
+    pular=""
+    addr="$1"""
+	echo -en "Arquivo \e[1;32m$1\e[0m: $addr"
+	if ! $(mousepad "$addr")
+	then
+		echo -e "\t\e[1;31mERRO\e[0m"
+		continuo
+	else
+		echo -e "\e[1;32m..Fechado\e[0m"
+	fi
+}
+function listar_2(){
+for ARQ in $( ls $1/ )
+  do
+  pular=""
+  [ -d "$1/$ARQ" ] && { NUMDIR=$(($NUMDIR+1))
+  lista $1/$ARQ; }
+  [ -f "$1/$ARQ" ] && NUMARQ=$(($NUMARQ+1))
+  echo -en "$ARQ""\n\t"
+    if [ -n $2 ]
+    then
+        continuo
+        if [ -z $pular ]
+        then
+            abrir "$ARQ"
+        fi
+    fi
+
+done
+}
+function lista(){
+for ARQ in $( ls $1/ )
+  do
+  pular=""
+  [ -d "$1/$ARQ" ] && { NUMDIR=$(($NUMDIR+1))
+  lista $1/$ARQ; }
+  [ -f "$1/$ARQ" ] && NUMARQ=$(($NUMARQ+1))
+done
+}
+
+function ralatorio {
+DIR="$1"
+# Caso nao seja digitado nenhum diretorio,
+# Sera usado o diretorio corrente por padrao
+if ! [ $DIR ];then  DIR='.';fi
+NUMARQ=0;NUMDIR=0
+
+lista $DIR
+echo -e "Existem $NUMARQ arquivos e $NUMDIR diretorios em '$DIR'. \n"
+}
+limite=20
+echo -e "Pense bem!! Não é uma boa Idéia"
+continuo
+ralatorio $1
+listar_2 "$DIR" "abrir"
+
+

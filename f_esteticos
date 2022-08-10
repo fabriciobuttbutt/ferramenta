@@ -1,0 +1,62 @@
+#!/bin/bash
+function Sinb_MM {
+	echo -en "\n\e[1;34m[\e[0m\e[1;32;1m+\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_nn {
+	echo -en "\n\e[1;34m[\e[0m\e[1;31;1m-\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_.. {
+	echo -en "\n\e[1;34m[\e[0m\e[1;35;1m.\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_Mai {
+	echo -en "\n\e[1;34m[\e[0m\e[1;37;1m>\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_err {
+	Sinb_nn; echo -en "\e[5;31mERRO\e[0m"
+}
+
+function Sinb_b1 {
+	echo -en "\n\e[1;34m[\e[0m\e[0;37;1m'\'\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_b2 {
+	echo -en "\n\e[1;34m[\e[0m\e[0;37m'|'\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_b3 {
+	echo -en "\n\e[1;34m[\e[0m\e[0;37m'/'\e[0m\e[1;34m] \e[0m"
+}
+function Sinb_b4 {
+	echo -en "\n\e[1;34m[\e[0m\e[0;37m'-'\e[0m\e[1;34m] \e[0m"
+}
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function SIG {
+	end="\e[0m" ; bef="\e[1;34m[$end" ; aft="\e[1;34m]$end"
+	case $1 in
+		"err") cor="\e[1;31;1m" ;;
+		"red") cor="\e[1;31;1m" ;;
+		"gre") cor="\e[1;32;1m" ;;
+		"pur") cor="\e[1;35;1m" ;;
+		"whi") cor="\e[1;37;1m" ;;
+		#"err") cor="\e[5;31m"   ;;
+		*)	   cor="\e[1;37;1m"
+	esac
+	if [ "$1" = "err" ];then
+		echo -en "\n $bef$cor$2$end$aft\e[5;31m $3$end"
+	else
+		echo -en "\n $bef$cor$2$end$aft\e[1;37m $3$end"
+	fi
+}
+function SIG2 {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO $2\e[0m" ;;
+		"ok")  SIG "+"; ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m$1\e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+SIG "+";SIG "-";SIG ">";SIG "err";SIG "ok"; SIG "."; SIG "g"
+SIG gre ;SIG red ;SIG whi casa ;SIG err ;SIG pur ; SIG err "-" ERRO ; SIG "g"

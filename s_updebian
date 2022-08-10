@@ -1,0 +1,62 @@
+#!/bin/bash
+function SIG {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO $2\e[0m" ;;
+		"ok")  SIG "+"; ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m$1\e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+
+function usage_menu(){
+	SIG ".";echo -en "USAGE: updebian [comando] [repositorio[opcional]]"
+	SIG ".";echo -en "EX: \e[1;38m updebian\e[0m off"
+	SIG ".";echo -en "\e[1;34mOPTIONS:\e[0m:
+	\e[1;34mon\e[0m:\tup sources.list repository
+	\e[1;34moff\e[0m:\tdown sources.list repository
+	\e[1;34mshow\e[0m:\tshow sources.list repository
+	\e[1;34mls\e[0m:\tshow repository list"
+}
+function escreve(){
+	$( echo -e "$texto" | sudo tee "$geral""$padrao" )
+	#(echo -e "$texto" > "$geral""$padrao")
+	SIG ".";echo -en "\e[1;32mAtual repositorio:\e[0m\n"
+	cat "$geral""$padrao"
+	SIG ".";echo -en "\e[1;32mapt-get update:\e[0m"
+	if ! sudo apt-get update
+		then
+			SIG "err";echo -en " de Update"
+		else
+			SIG "+";echo -en "\e[1;32mapt-get update Atulizado!\e[0m"
+	fi
+}
+[ $# -eq 0 ] && { SIG "err"; echo -en " de entrada";usage_menu;exit; }
+geral="/etc/apt/sources.list.d/"
+padrao="debian.list"
+[ $# -eq 2 ] && padrao="$2"
+
+texto=$(sudo cat "$geral""$padrao")
+texto=${texto//#/}
+case $1 in 
+	"on")	escreve
+;; 
+	"off")	texto=${texto//"deb"/"#deb"}
+			escreve
+;;  
+	"show")	sudo cat "$geral""$padrao"
+;;
+	"ls")	SIG ".";echo -en "\e[1;32mLista de repositorios:\e[0m"
+			SIG "."
+			ls $geral
+			SIG ".";echo -en "\e[1;32mRepositorio Padrao:\e[0m $padrao"
+;;
+	*)	SIG "err";echo -en " entrada desconhecida"
+		usage_menu
+esac
+
+
+
+

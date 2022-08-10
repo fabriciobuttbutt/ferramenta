@@ -1,0 +1,182 @@
+#!/bin/bash
+function func_sdx {
+	var=$(lsblk | grep "1,8T")
+	sdx=${var:0:3}"1"
+	echo $sdx
+}
+function abortado {
+	echo -e "\n\e[1;31mAbort\e[0m !! [CODE:$1]" # ABORT
+	exit
+
+}
+function usage_menu(){
+	echo "USAGE: myMedia [comand]"
+	echo -e "EX: \e[1;38m myMedia\e[0m restart"
+	echo -e "\e[1;34m OPTIONS:\e[0m:
+	\e[1;34mls\e[0m:\tdocker running containers
+	\e[1;34mstop\e[0m:\tstop docker containers
+	\e[1;34mrestart\e[0m:restart docker containers"
+	#\e[1;34mmount\e[0m:\tmontar HDD
+	#\e[1;34mremount\e[0m:remontar HDD
+	#\e[1;34mall\e[0m:\trestart docker and HDD
+	#\e[1;34mgo\e[0m:\trestart docker and HDD sem perguntas"
+}
+function testar_entraga_variavel(){
+	mensagem='OK'
+	if [ $1 -lt 1 ];then 		mensagem='Erro de Entrada';fi
+	echo $mensagem
+}
+
+function restart {
+	echo -e "\n\e[1;32m${1^^}\e[0m containers docker.."
+	containers=$(sudo docker container ls -q | xargs)
+	if [ "${#containers}" -ne 0 ]; 
+	then
+		(sudo docker container $1 $containers)
+		echo "done!"
+	else
+		echo "no momento, nenhum container esta ativo."
+	fi
+}
+function apagar {
+	if [ -d $1 ]
+	then
+		echo -e "\t\e[1;32m$1\e[0m existe !"
+		var=$(mountpoint $1)
+		echo -en "\t\e[1;32m$1\e[0m${var#$1}"
+		if mountpoint -q "$1"
+		then
+			echo " ..desmontando";sleep 1
+			sudo umount "$1"
+			sdx=$(func_sdx)
+		else
+			echo -e ""
+		fi
+		vazio=$(sudo ls "$1")
+		if [ -z "$vazio" ]
+		then
+			echo -en "\t\e[1;32m$1\e[0m nao contem arquivos.."
+			(sudo rm -r "$1")
+			echo ".. diretório apagado !!"
+		else
+			echo -e "\t\e[1;32m$1\e[0m CONTEM arquivos!!"
+			abortado "1" #-----------------------
+		fi
+	else
+		echo -e "\t\e[1;32m$1\e[0m nao exite!!"
+	fi
+}
+function montar {
+	(sudo mount -o loop "$2" "$1")
+	echo -ne "\n\t"
+	(lsblk | grep $1)
+	echo -ne "\n\t"
+}
+function remontar {
+	echo -e "\nRemontando pastas e HDD.." 
+	(sudo mkdir "$1")
+	echo -e "\t\e[1;32m$1\e[0m diretório criado."
+	sleep 1;
+	bit_file=/mnt/bitlocker/dislocker-file
+	if (test -e $bit_file)
+	then
+		montar $1 "$bit_file"
+	else
+		if [[ $2 = "ask" ]]
+		then
+			echo -e "\tarquivo \e[1;32m$bit_file\e[0m nao existe"
+			echo -ne "\tDeseja cria-lo(y/n)?"
+			read -n1 opsao
+		else
+			opsao="y"
+		fi
+		if [[ $opsao = "y" || $opsao = "Y" ]]
+		then
+			echo ""
+			if [[ $2 = "ask" ]]
+			then
+				(lsblk)
+				echo -ne "\n\tDigite a Fonte [Padrao:\e[1;32m$3\e[0m]: ";read opsao
+			else
+				if [[ $3 = "" ]];then abortado "2";fi #-----------------------
+				opsao=$3
+			fi
+			
+			if [ ${#opsao} -gt  4 ];then abortado "3";fi #-----------------------
+			if [ ${#opsao} -lt  4 ];then abortado "4";fi #-----------------------
+			(sudo dislocker -v -V /dev/"$opsao" --user-password="HDDwindows" -- /mnt/bitlocker)
+			echo -e "\tarquivo \e[1;32m/mnt/bitlocker\e[0m gerado."
+			if [[ $2 = "ask" ]]
+			then
+				echo -ne "\tArquivo criado. Montar(y/n)?"
+				read -n1 opsao;echo ""
+			else
+				opsao="y"
+			fi
+			if [[ $opsao = "y" || $opsao = "Y" ]]
+			then
+				montar $1 "$bit_file"
+			else
+				abortado "5" #-----------------------
+			fi
+		else
+			abortado "6" #-----------------------
+		fi
+	fi	
+	sleep 1
+	var=$(mountpoint $1)
+	echo -e "\n\t\e[1;32m$1\e[0m ${var#$1}"
+}
+fonte=/media/butt/Lento
+fonte1=/media/butt/Lento1
+var_de_erro=$(testar_entraga_variavel $#)
+if [[ $var_de_erro != 'OK' ]];then	echo "Erro:" $var_de_erro;usage_menu;exit;fi
+
+sdx=$(func_sdx)
+
+case $1 in 
+	"ls") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar stop 
+		echo $(sudo docker container ls -q | xargs)
+;; 
+	"stop") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar stop 
+		restart "stop" # docker
+;; 
+	"restart") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar restart" 
+		restart "restart" # docker
+;; 
+	"remount") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar stop
+		#echo -e "Desmontando pastas e HDD.." 
+		#apagar $fonte1
+		#apagar $fonte
+		#remontar  $fonte "ask" $sdx
+;; 
+	"mount") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar stop
+		#echo -e "Desmontando pastas e HDD.." 
+		#bit_file=/mnt/bitlocker/dislocker-file
+		#montar $fonte "$bit_file" $sdx
+;;
+	"all") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar restart" 
+		#echo -e "Desmontando pastas e HDD.." 
+		#apagar $fonte1
+		#apagar $fonte
+		#remontar  $fonte "ask" $sdx
+		#restart "restart"  # docker
+;;
+	"go") #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Processar restart" 
+		echo -e "Desmontando pastas e HDD..$sdx" 
+		if [ ${#sdx} -gt  4 ];then abortado "7";fi
+		#apagar $fonte1
+		#apagar $fonte
+		#remontar  $fonte "dontask" $sdx
+		#restart "restart"  # docker
+;;
+	*)
+		echo "Erro:entrada desconhecida"
+		usage_menu
+		exit
+esac
+
+echo "..success!!"
+exit
+
+

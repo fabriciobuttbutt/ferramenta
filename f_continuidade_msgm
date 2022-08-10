@@ -1,0 +1,34 @@
+#!/bin/bash
+function SIG {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO $2\e[0m" ;;
+		"ok")  SIG "+"; ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m$1\e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+function continuo {
+	msgm="$1"
+	[ -z "$1" ] &&	msgm="Continuar"
+	SIG ">";echo -en "\e[1;32m""$msgm"" \e[0m[y/n][Padrao: n]? "
+	read -t5 -n1 opsao
+	[[ "$opsao" = "y" || "$opsao" = "Y" ]] &&	return 0
+	[[ "$opsao" = "p" || "$opsao" = "P" ]] &&	return 1
+	exit 1
+}
+
+if continuo "msgm" ;then
+      echo "0y"
+else
+      echo "1p";fi
+
+while [[ i -ne 1 ]]
+do
+	i= continuo
+	echo “Você digitou ”
+
+done
+

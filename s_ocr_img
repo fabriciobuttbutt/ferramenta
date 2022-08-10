@@ -1,0 +1,77 @@
+#!/bin/bash
+function SIG {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO $2\e[0m" ;;
+		"ok")  SIG "+"; ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m$1\e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+function comando {
+	if ! tesseract -l "$1" "$2" "$3";then
+		SIG "err"; echo -en " no $ARQ"
+	else
+		SIG "+"; echo -en "\e[1;34mOK:\e[0m	$ARQ."
+	fi
+}
+function continuo {
+	msgm="$1"
+	[ -z "$1" ] &&	msgm="Continuar"
+	SIG ">";echo -en "\e[1;32m""$msgm"" \e[0m[y/n][Padrao: n]? "
+	read -t9 -n1 opsao
+	[[ "$opsao" = "y" || "$opsao" = "Y" ]] &&	return 0
+	exit 1
+}
+
+function lista(){
+if ! ( ls $1/ > '/dev/null' );then
+	SIG "err"; echo -en " no diretorio \e[1;37m$1\e[0m"
+	exit
+	fi
+for ARQ in $( ls $1/ )
+	do
+	i="$1/$ARQ"
+	if [ -f $i ];
+	then
+		last=$((${#i}-4))
+		if [ "${i:$last:4}" = ".png" ] || [ "${i:$last:4}" = ".PNG" ] || [ "${i:$last:4}" = ".jpg" ] || [ "${i:$last:4}" = ".JPG" ]
+		then
+			nArq=$(($nArq+1))
+			nome_ocr="$i""_""$2"
+			[ -n "$2" ] && comando $2 $i $nome_ocr
+		fi
+	fi
+done
+}
+function ralatorio {
+DIR="$1";[ -z "$DIR" ] &&  DIR='.' #Sera usado o diretorio corrente por padrao
+nArq=0
+lista "$DIR"
+SIG ".";echo -en "Existem \e[1;32m$nArq\e[0m arquivos de Imagens possiveis de executar o OCR. Dir: \e[1;32m$DIR\e[0m. \n"
+[ $nArq -eq 0 ] && exit
+}
+function menu(){
+	SIG ">";echo -en "USAGE: s_ocr [diretorio[opcional]]"
+	SIG ">";echo -en "EX: \e[1;38m s_ocr\e[0m ."
+}
+
+if [[ $# -gt 1 ]];then SIG "err";echo -en " Multiplas entradas.";menu;exit;fi
+
+if [ -z $1 ];
+then
+	SIG ">";read -p "Qual o diretorio [ENTER: atual]: " DIR
+else
+	DIR="$1"
+	SIG ">"; echo -en "Diretorio em uso: $DIR"
+fi
+ralatorio $DIR
+if continuo ;then
+	SIG ".";tesseract --list-langs
+	SIG ">";read -t9 -n3 -p "Escolha o idioma [Padrao:'por']: " lang
+	[ -n "$lang" ] && echo -en "\n"
+	[ -z "$lang" ] && echo -en "por\n" && lang="por"
+	lista $DIR $lang
+fi

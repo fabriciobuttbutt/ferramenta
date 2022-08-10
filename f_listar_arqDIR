@@ -1,0 +1,30 @@
+#!/bin/bash
+function lista(){
+for ARQ in $( ls $1/ )
+  do
+  #True se existe e é um diretório.
+  [ -d "$1/$ARQ" ] && { NUMDIR=$(($NUMDIR+1));lista $1/$ARQ; }
+  #True se existe e é um arquivo regular.
+  [ -f "$1/$ARQ" ] && NUMARQ=$(($NUMARQ+1))
+done
+}
+function relatorio {
+DIR="$1";[ -z "$DIR" ] &&  DIR='.' #Sera usado o diretorio corrente por padrao
+nArq=0
+lista "$DIR"
+}
+relatorio $1
+echo -e "Existem $NUMARQ arquivos e $NUMDIR diretorios em '$DIR'. \n"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~Segunda opcao (so arquivo)+ relatorio
+function lista2(){
+for ARQ in $( ls $1/ ); do
+	i="$1/$ARQ"
+	if [ -f $i ];
+	then
+		if [ "${i:$last:4}" = ".png" ] || [ "${i:$last:4}" = ".PNG" ]; then
+			nArq=$(($nArq+1)); fi
+	fi
+done
+}
+
+
