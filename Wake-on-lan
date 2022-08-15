@@ -1,0 +1,70 @@
+#!/bin/bash
+function SIG { #cor] [simbolo] [msgm1] [msgm2]
+	end="\e[0m" ; bef="\n\e[1;34m[$end" ; aft="\e[1;34m]$end"
+	case $1 in
+		"err") cor="\e[1;31;1m" ;;
+		"red") cor="\e[1;31;1m" ;;
+		"gre") cor="\e[1;32;1m" ;;
+		"pur") cor="\e[1;35;1m" ;;
+		"whi") cor="\e[1;37;1m" ;;
+		*)	   bef="\e[1;34m[$end\e[1;37;1m"
+	esac
+	if [ "$1" = "err" ];then
+		echo -en "$bef$cor$2$end$aft\e[5;31m $3$end\e[1;37m $4$end"
+	else
+		echo -en "$bef$cor$2$end$aft\e[1;37m $3$end $4"
+	fi
+}
+function errou {
+	comd="(sudo $1)"
+	if ! eval $comd ; then
+		SIG err "ERRO" " $2"
+		exit 1;
+	else
+		SIG gre "+" "$2 OK !!\n"
+		sleep 2
+	fi
+}
+nome="Wake-on-lan.service"
+dir="/etc/systemd/system"
+sudo echo -en "\n"
+SIG whi ".." "Iniciando Wake-on-lan"
+SIG whi ".." "Condição atual:\n"
+errou "ethtool eth0 | grep Wake-on"
+
+SIG whi ".." "Alterando para";SIG n "On" "= [g]"
+errou "ethtool -s eth0 wol g"
+
+SIG whi ".." "Novo Estado:\n"
+errou "ethtool eth0 | grep Wake-on"
+
+SIG whi ".." "Criando ";SIG n "$nome" "\n"
+sudo touch $dir/$nome
+
+texto="[Unit]\n
+Description=Ativa Wake-on-Lan\n
+[Service]\n
+ExecStart=/usr/sbin/ethtool -s eth0 wol g\n
+#User=root\n
+#Restart=always\n
+[Install]\n
+WantedBy=multi-user.target"
+
+if ! ( echo -e $texto | sudo tee $dir/$nome)  ; then
+	SIG err "ERRO" " $2";exit 1;
+else
+	SIG n "+" "$2 OK !!"
+fi
+
+
+SIG whi ".." "Reiniciando Deamon "
+errou "systemctl daemon-reload"
+
+SIG whi ".." "Ativando ";SIG n "$nome"
+errou  "systemctl enable $nome"
+
+SIG whi ".." "Iniciando ";SIG n "$nome"
+errou "systemctl start $nome"
+
+SIG whi ".." "Atual Status ";SIG n "$nome" "\n"
+sudo systemctl status $nome

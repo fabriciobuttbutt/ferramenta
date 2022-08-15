@@ -1,0 +1,9 @@
+#!/bin/bash
+#sudo ethtool eth0 | grep Wake-on
+#sudo ethtool -s eth0 wol g
+#sudo ethtool eth0 | grep Wake-on
+#read -n1 -p "Confirmar Lock-Session[y/n]?" opcao
+#if [ "$opcao" = "y" ] ; then loginctl lock-session ;fi
+sleep 5
+#sudo /usr/bin/loginctl lock-sessions
+loginctl lock-session

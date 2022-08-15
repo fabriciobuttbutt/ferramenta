@@ -1,0 +1,28 @@
+#!/bin/bash
+function SIG { #cor] [simbolo] [msgm1] [msgm2]
+	end="\e[0m" ; bef="\n\e[1;34m[$end" ; aft="\e[1;34m]$end"
+	case $1 in
+		"err") cor="\e[1;31;1m" ;;
+		"red") cor="\e[1;31;1m" ;;
+		"gre") cor="\e[1;32;1m" ;;
+		"pur") cor="\e[1;35;1m" ;;
+		"whi") cor="\e[1;37;1m" ;;
+		*)	   bef="\e[1;34m[$end\e[1;37;1m"
+	esac
+	if [ "$1" = "err" ];then
+		echo -en "$bef$cor$2$end$aft\e[5;31m $3$end\e[1;37m $4$end"
+	else
+		echo -en "$bef$cor$2$end$aft\e[1;37m $3$end $4"
+	fi
+}
+case $1 in
+		"on") cor1="g" ;;
+		"g") cor1="g" ;;
+		"d") cor1="d" ;;
+		"off") cor1="d" ;;
+		*)	cor1="g"
+esac
+SIG whi "Wake-on-lan" "$1" "$cor1"
+(sudo ethtool -s eth0 wol "$cor1")
+SIG whi ".."
+sudo ethtool eth0 | grep Wake-on

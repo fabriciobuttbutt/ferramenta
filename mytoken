@@ -1,0 +1,60 @@
+#!/bin/bash
+function SIG { #cor] [simbolo] [msgm1] [msgm2]
+	end="\e[0m" ; bef="\n\e[1;34m[$end" ; aft="\e[1;34m]$end"
+	case $1 in
+		"err") cor="\e[1;31;1m" ;;
+		"red") cor="\e[1;31;1m" ;;
+		"gre") cor="\e[1;32;1m" ;;
+		"pur") cor="\e[1;35;1m" ;;
+		"whi") cor="\e[1;37;1m" ;;
+		*)	   bef="\e[1;34m[$end\e[1;37;1m"
+	esac
+	if [ "$1" = "err" ];then
+		echo -en "$bef$cor$2$end$aft\e[5;31m $3$end\e[1;37m $4$end"
+	else
+		echo -en "$bef$cor$2$end$aft\e[1;37m $3$end $4"
+	fi
+}
+
+function continuo { # [no_ask or padrao] [msgm]
+	if [ "$1" != "no_ask" ];then
+		msgm="$2";[ -z "$2" ] &&	msgm="Continuar"
+		SIG whi ">>" "$msgm" ; SIG n "y/n/pular" "Padrao:$1 ?"
+		read -t15 -n1 opsao
+		[ -z "$opsao" ] &&	opsao="$1"
+		[[ "$opsao" = "y" || "$opsao" = "Y" ]] &&	return 0
+		[[ "$opsao" = "p" || "$opsao" = "P" ]] &&	return 1
+		exit 1
+	fi
+
+}
+function menu { # [no_ask or padrao] [msgm]
+	mini=("git","User","Trigger")
+	echo $mini
+}
+function check {
+	case $1 in
+	"git")
+		name="gitToken"
+		token="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"
+		;;
+	"User")
+		name="gitUser"
+		token="fabriciobuttbutt"
+		;;
+	"Trigger")
+		name="FabricioGmabillot"	token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDI1NTY2MTI0YzRkMDAxOWY5NjA3MSIsImlhdCI6MTY2MDQzNjM0OX0.EwZwxuWKq-HJ7J24kNwwCJChkjEb82ROOVo-mtK-8nw"
+		;;
+	*)SIG "err" Opcoes; menu;exit 1
+	esac
+}
+
+if [ "$1" = "-v" ];then check $2
+	echo $token
+else
+	check $1
+	SIG whi ".." "$name:" "$token"
+fi
+
+
+

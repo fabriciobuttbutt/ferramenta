@@ -1,0 +1,57 @@
+#!/bin/bash
+function SIG {
+	case $1 in
+		"+") echo -en "\n\e[1;34m [\e[0m\e[1;32;1m+\e[0m\e[1;34m] $2\e[0m" ;;
+		"-") echo -en "\n\e[1;34m [\e[0m\e[1;31;1m-\e[0m\e[1;34m] $2\e[0m" ;;
+		">") echo -en "\n\e[1;34m [\e[0m\e[1;37;1m>\e[0m\e[1;34m] $2\e[0m" ;;
+		".") echo -en "\n\e[1;34m [\e[0m\e[1;35;1m.\e[0m\e[1;34m] $2\e[0m" ;;
+		"err") SIG "-"; echo -en "\e[5;31mERRO $2\e[0m" ;;
+		"ok")  SIG "+"; ;;
+		*)	   echo -en "\n\e[1;34m [\e[0m\e[1;37;1m$1\e[0m\e[1;34m] $2\e[0m"
+	esac
+}
+dt=$(date "+%d.%m.%Y_%H.%M");
+function erro_aviso {
+	SIG "..";echo -en "Comando\e[0m \e[1;33m$1\e[0m:\n "
+	if ! $1
+	then
+		SIG "err";echo -en " de execução \e[1;33m$1\e[0m!"
+	else
+		SIG "+";echo -en "Comando\e[0m \e[1;33m$1\e[0m \e[1;38mFinalizado$2\e[0m"
+	fi
+}
+function continuo {
+	msgm="$1"
+	[ -z "$1" ] &&	msgm="\e[1;32mContinuar com o envio \e[0m[y/n]? "
+	SIG ">";echo -en "\e[1;32m""$msgm"" \e[0m[y/n][Padrao: n]? "
+	read -t15 -n1 opsao
+	[[ "$opsao" = "y" || "$opsao" = "Y" ]] &&	return 0
+	[[ "$opsao" = "p" || "$opsao" = "P" ]] &&	return 1
+	exit 1
+}
+function ir_pasta {
+SIG ">";echo -en "Ir até Scripts \e[0m[y/n]? "
+read -n1 opsao;echo ""
+	if [[ $opsao = "y" || $opsao = "Y" ]]
+	then
+		cd /media/butt/Arquivos/Scripts
+	fi
+	SIG "..";echo -en "\e[1;32mPasta atual: \e[0m \e[1;33m$(pwd)\e[0m"
+
+}
+SIG "..";echo -en "\e[1;33mIniciando Commit\e[0m $dt"
+ir_pasta
+proximo=", proximo comando \e[1;33mgit status\e[0m"
+erro_aviso "git log -n 1" "$proximo"
+proximo=", proximo comando \e[1;33mgit add -A\e[0m"
+continuo; erro_aviso "git status" "$proximo"
+proximo=", proximo comando \e[1;33mgit status\e[0m"
+continuo; erro_aviso "git add -A" "$proximo"
+proximo=", proximo comando \e[1;33mgit commit\e[0m"
+continuo; erro_aviso "git status" "$proximo"
+nomeado="Atualizando_$dt"
+continuo; erro_aviso "git commit -m $nomeado" "$proximo"
+proximo=", proximo comando \e[1;33mgit push\e[0m"
+erro_aviso "git log -n 2" "$proximo"
+continuo; erro_aviso "git push"
+SIG "..";echo -en "\e[1;31mFim do Commit\e[0m"

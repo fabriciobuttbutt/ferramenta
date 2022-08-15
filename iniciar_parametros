@@ -1,0 +1,4 @@
+#!/bin/bash
+gittoken="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"
+gituser="fabriciobuttbutt"
+virt="virsh net-start default"
