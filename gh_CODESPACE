@@ -1,0 +1,15 @@
+    gh codespace code  [flags] | Open a codespace in Visual Studio Code
+-c, --codespace <string> | Name of the codespace
+--insiders | Use the insiders version of Visual Studio Code
+-w, --web | Use the web version of Visual Studio Code
+
+    gh codespace create [flags] | Create a codespace
+-b, --branch <string> |  repository branch
+--default-permissions |   do not prompt to accept additional permissions requested by the codespace
+--devcontainer-path <string> |  path to the devcontainer.json file to use when creating codespace
+--idle-timeout <duration> |  allowed inactivity before codespace is stopped, e.g. "10m", "1h"
+-l, --location <string> |  location: {EastUs|SouthEastAsia|WestEurope|WestUs2} (determined automatically if not provided)
+-m, --machine <string> |   hardware specifications for the VM
+-r, --repo <string> |   repository name with owner: user/repo
+--retention-period <duration> |   allowed time after shutting down before the codespace is automatically deleted (maximum 30 days), e.g. "1h", "72h"
+-s, --status |   show status of post-create command and dotfiles

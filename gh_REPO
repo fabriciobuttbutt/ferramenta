@@ -1,0 +1,32 @@
+gh repo | Work with GitHub repositories.
+gh repo archive [<repository>] [flags] | Archive a GitHub repository.
+    -y, --confirm |  Skip the confirmation prompt
+
+gh repo clone <repository> [<directory>] [-- <gitflags>...] | Clone a GitHub repository locally. Pass additional git clone flags by listing them after "--".
+    -u, --upstream-remote-name <string> | Upstream remote name when cloning a fork
+
+gh repo create [<name>] [flags] | https://cli.github.com/manual/gh_repo_create
+gh repo delete [<repository>] [flags] | Delete a GitHub repository.
+    --confirm |  confirm deletion without prompting
+gh repo deploy-key | Manage deploy keys in a repository
+    -R, --repo <[HOST/]OWNER/REPO> | Select another repository using the [HOST/]OWNER/REPO format
+gh repo deploy-key add <key-file> [flags] |Add a deploy key to a GitHub repository.
+    -w, --allow-write | Allow write access for the key
+    -t, --title <string> | Title of the new key
+    -R, --repo <[HOST/]OWNER/REPO> |  Select another repository using the [HOST/]OWNER/REPO format
+        Examples:
+        # generate a passwordless SSH key and add it as a deploy key to a repository
+        ssh-keygen -t ed25519 -C "my description" -N "" -f ~/.ssh/gh-test
+        gh repo deploy-key -R fabriciobuttbutt/Linux_install add ~/.ssh/gh-test.pub
+
+sudo git init
+sudo git remote add origin https://github.com/fabriciobuttbutt/Linux_install.git
+sudo git branch -M master
+sudo git pull
+git status
+git add -A
+
+git status
+git commit -m "14/09"
+git status
+git push -u origin master

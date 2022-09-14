@@ -1,0 +1,35 @@
+ 
+    gh auth status | Verifies and displays information about your authentication state.
+-h, --hostname <string> | Check a specific hostname's auth status
+-t, --show-token|Display the auth token
+
+    gh auth login [flags] | Authenticate with a GitHub host.
+-p, --git-protocol <string> | The protocol to use for git operations: {ssh|https}
+-h, --hostname <string> | The hostname of the GitHub instance to authenticate with
+-s, --scopes <strings> | Additional authentication scopes to request
+-w, --web | Open a browser to authenticate
+--with-token | Read token from standard input
+
+        Examples
+        gh auth login | start interactive setup
+
+        gh auth login --with-token < ghmytoken.txt | authenticate github.com by token from a file
+        gh auth login --hostname enterprise.internal | authenticate with a specific GitHub instance
+
+    gh auth setup-git | Configure git to use GitHub CLI as a credential helper
+-h, --hostname <string> | The hostname to configure git for
+
+    gh auth logout [flags] | Remove authentication for a GitHub host.
+-h, --hostname <string> | The hostname of the GitHub instance to log out of
+
+    gh auth refresh [flags] | Expand or fix the permission scopes for stored credentials.
+-h, --hostname <string> | The GitHub host to use for authentication
+-s, --scopes <strings> |  Additional authentication scopes for gh to have
+
+        Examples
+        gh auth refresh -h github.com -s codespace
+        gh auth refresh --scopes write:org,read:public_key
+            # => open a browser to add write:org and read:public_key scopes for use with gh api
+
+        gh auth refresh
+            # => open a browser to ensure your authentication credentials have the correct minimum scopes

@@ -27,4 +27,10 @@ for ARQ in $( ls $1/ ); do
 done
 }
 
+for nomeApp in "${script_apps[@]}";	do
+	echo "$nomeApp"
+        if arqCheck "y" $nomeApp "."; then
+		mySudo "echo '$nomeApp OK'" "" "pre" "pos"
+		fi
+done
 

@@ -1,0 +1,9 @@
+# Inseridos Agora #
+#Arquivos
+UUID=278CCF953D2D39C9 /media/butt/Arquivos           ntfs-3g    defaults,uid=1000,gid=1000        0       2
+
+#ext4NTFS
+UUID=490B31C315DE8ABD /media/butt/ext4NTFS           ntfs-3g    defaults,uid=1000,gid=1000        0       2
+
+#backup
+UUID=3316E4950B30C431 /media/butt/backup           ntfs-3g    defaults,uid=1000,gid=1000        0       2
